@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="myMem">
+	
+	<select id="getArticleCount" resultType="int">
+	 select count(*) from board
+	</select>
+	
+	<select id="getArticles" resultType="action.boardDataBean" parameterType="Map" >	
+            select num,writer,email,subject,passwd,reg_date,ref,re_step,re_level,content,ip,readcount,r   
+            from (select num,writer,email,subject,passwd,reg_date,ref,re_step,re_level,content,ip,readcount,rownum r  
+            from (select * from board order by ref desc, re_step asc) order by ref desc, re_step asc ) where r &gt;= #{startRow} and r &lt;= #{endRow}
+	</select>
+	
+	<select id="searchgetArticleCount" resultType="int" parameterType="String">
+	 select count(*) from board <where>
+	 <if test="searchN == 0">
+		writer 
+	 </if>	
+	  <if test="searchN == 1">
+		subject 
+	 </if>
+	  <if test="searchN == 2">
+		content 
+	 </if> 
+		 like '%' || #{searchKeyword} || '%'
+	 </where>
+	 	
+	</select>
+	
+	<select id="searchgetArticles" resultType="action.boardDataBean" parameterType="Map" >
+
+	select
+	num,writer,email,subject,passwd,reg_date,ref,re_step,re_level,content,ip,readcount,r
+	from (select
+	num,writer,email,subject,passwd,reg_date,ref,re_step,re_level,content,ip,readcount,rownum r
+	from (select * from board order by ref desc, re_step asc) 
+	<where> <if test="searchN == 0">
+		writer 
+	 </if>	
+	  <if test="searchN == 1">
+		subject 
+	 </if>
+	  <if test="searchN == 2">
+		content 
+	 </if> 
+	</where>
+	like '%' || #{searchKeyword} || '%'
+	order by ref desc, re_step asc ) where r &gt;= #{startRow} and r &lt;= #{endRow}
+	
+	</select>
+	
+	
+	<select id="getArticle" resultType="action.boardDataBean" parameterType="int" >
+	select * from board where num = #{num}
+	</select>
+	
+	
+	<insert id="insert" parameterType="action.boardDataBean">
+		insert into board(num,writer,email,subject,passwd,reg_date,ref,re_step,re_level,content,ip)
+		values(board_num.NEXTVAL,#{writer},#{email},#{subject},#{passwd},sysdate,#{ref},#{re_step},#{re_level},#{content},#{ip})
+	</insert>
+	
+	<select id="deletepw" resultType="String" parameterType="action.boardDataBean">
+	 select passwd from board where num = #{num}
+	</select>
+	
+	<delete id="delete" parameterType="action.boardDataBean">
+	delete from board where num=#{num} 
+	</delete>
+	
+	
+	<update id="update" parameterType="action.boardDataBean">
+	update board set writer = #{writer},email = #{email}, subject = #{subject} , passwd = #{passwd} , content = #{content}, reg_date = sysdate where num = #{num}
+	</update>
+	
+	
+	<select id="getMax" resultType="String"  parameterType="action.boardDataBean">
+	select max(num) from board
+	</select>
+	
+		<select id="getMax1" resultType="int"  parameterType="action.boardDataBean">
+	select max(num) from board
+	</select>
+	
+	<update id="updateRef" parameterType="action.boardDataBean">
+	update board set re_step=re_step+1 where ref=#{ref} and re_step&gt;#{re_step}
+	</update>
+	
+	<update id="readcount" parameterType="action.boardDataBean">
+	update board set readcount=readcount+1 where num = #{num}
+	</update>
+</mapper>

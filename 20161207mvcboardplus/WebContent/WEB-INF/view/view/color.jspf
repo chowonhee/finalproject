@@ -1,0 +1,6 @@
+<c:set var="bodyback_c" value="#FFFFFF"/>
+<c:set var="back_c" value="#FF0040"/>
+<c:set var="title_c" value="#FFFF00"/>
+<c:set var="value_c" value="#A9F5E1"/>
+<c:set var="bar" value="#F5F6CE"/>
+
